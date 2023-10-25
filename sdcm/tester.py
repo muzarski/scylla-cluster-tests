@@ -55,6 +55,7 @@ from sdcm.cluster_aws import LoaderSetAWS
 from sdcm.cluster_aws import MonitorSetAWS
 from sdcm.cluster_k8s import mini_k8s, gke, eks
 from sdcm.cluster_k8s.eks import MonitorSetEKS
+from sdcm.cql_stress_cassandra_stress_thread import CqlStressCassandraStressThread
 from sdcm.provision.azure.provisioner import AzureProvisioner
 from sdcm.provision.provisioner import provisioner_factory
 from sdcm.scan_operation_thread import ScanOperationThread
@@ -1866,19 +1867,20 @@ class ClusterTester(db_stats.TestStatsMixin, unittest.TestCase):  # pylint: disa
             self.update_stress_cmd_details(stress_cmd, prefix, stresser="cassandra-stress",
                                            aggregate=stats_aggregate_cmds)
         stop_test_on_failure = False if not self.params.get("stop_test_on_stress_failure") else stop_test_on_failure
-        cs_thread = CassandraStressThread(loader_set=self.loaders,
-                                          stress_cmd=stress_cmd,
-                                          timeout=timeout,
-                                          stress_num=stress_num,
-                                          keyspace_num=keyspace_num,
-                                          compaction_strategy=compaction_strategy,
-                                          profile=profile,
-                                          node_list=self.db_cluster.nodes,
-                                          round_robin=round_robin,
-                                          client_encrypt=self.params.get('client_encrypt'),
-                                          keyspace_name=keyspace_name,
-                                          stop_test_on_failure=stop_test_on_failure,
-                                          params=params or self.params).run()
+        cls = CqlStressCassandraStressThread if "cql-stress" in stress_cmd else CassandraStressThread
+        cs_thread = cls(loader_set=self.loaders,
+                        stress_cmd=stress_cmd,
+                        timeout=timeout,
+                        stress_num=stress_num,
+                        keyspace_num=keyspace_num,
+                        compaction_strategy=compaction_strategy,
+                        profile=profile,
+                        node_list=self.db_cluster.nodes,
+                        round_robin=round_robin,
+                        client_encrypt=self.params.get('client_encrypt'),
+                        keyspace_name=keyspace_name,
+                        stop_test_on_failure=stop_test_on_failure,
+                        params=params or self.params).run()
         scylla_encryption_options = self.params.get('scylla_encryption_options')
         if scylla_encryption_options and 'write' in stress_cmd:
             # Configure encryption at-rest for all test tables, sleep a while to wait the workload starts and test tables are created

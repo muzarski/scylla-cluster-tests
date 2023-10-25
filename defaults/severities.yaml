@@ -115,6 +115,7 @@ EventsSeverityChangerFilter: NORMAL
 NodetoolEvent: ERROR
 ScyllaBenchEvent: CRITICAL
 CassandraStressEvent: CRITICAL
+CqlStressCassandraStressEvent: CRITICAL
 LatteStressEvent: CRITICAL
 GeminiStressEvent: CRITICAL
 ScyllaServerStatusEvent: NORMAL

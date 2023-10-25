@@ -78,6 +78,10 @@ class LatteStressEvent(StressEvent):
     ...
 
 
+class CqlStressCassandraStressEvent(StressEvent):
+    ...
+
+
 class CassandraHarryEvent(StressEvent, abstract=True):
     failure: Type[StressEventProtocol]
     error: Type[SctEventProtocol]

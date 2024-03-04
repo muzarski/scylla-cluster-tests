@@ -14,6 +14,9 @@ prepare_write_cmd:  ["scylla-bench -workload=sequential -mode=write -max-rate=30
                      "scylla-bench -workload=uniform -mode=read -replication-factor=3 -partition-count=10 -clustering-row-count=100 -clustering-row-size=5120 -rows-per-request=10 -concurrency=7 -max-rate=32000 -duration=1m"
                     ]
 
+stress_image:
+  scylla-bench: 'scylladb/hydra-loaders:cql-stress-scylla-bench-20240304'
+
 n_loaders: 1
 instance_type_db: 'i4i.large'
 n_monitor_nodes: 1
